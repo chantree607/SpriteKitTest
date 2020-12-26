@@ -34,6 +34,7 @@ class GameScene: SKScene {
         view.addGestureRecognizer(pinchGesture)
         
         //this rectangle shows the staring frame of the scene
+        
         let rectangle = SKShapeNode(rect: self.frame)
         rectangle.strokeColor = .green
         rectangle.lineWidth = 20
@@ -48,29 +49,23 @@ class GameScene: SKScene {
         addChild(background)
         print("background position: \(background.position)")
         
-        //randomly add clouds
-        let cloud = SKSpriteNode(imageNamed: "cloud1")
-        let cloudHeight = cloud.frame.height / 2
-        let cloudWidth = cloud.frame.width / 2
-        cloud.position = CGPoint(x:0 , y:0)
-        //cloud.xScale = 0.3
-        //cloud.yScale = 0.3
-        addChild(cloud)
-        //var clouds = 0
+        //add bottom limit
+        var splinePoints = [CGPoint(x: -view.bounds.width / 2, y: -view.bounds.height / 2), CGPoint(x: view.bounds.width * 1.5, y: -view.bounds.height / 2)]
+        let ground = SKShapeNode(splinePoints: &splinePoints, count: splinePoints.count)
+        ground.lineWidth = 5
+        ground.physicsBody = SKPhysicsBody(edgeChainFrom: ground.path!)
+        ground.physicsBody?.restitution = 0.75
+        ground.physicsBody?.isDynamic = false
+        addChild(ground)
         
-        /*
-        for i in stride(from: -view.bounds.width/2, to: view.bounds.width * 1.5 , by: cloudWidth) {
-            for j in stride(from: -view.bounds.height/2, to: view.bounds.height * 1.5, by: cloudHeight) {
-                let cloud = SKSpriteNode(imageNamed: "cloud1")
-                cloud.position = CGPoint(x: i, y: j)
-                cloud.xScale = 0.3
-                cloud.yScale = 0.3
-                
-                addChild(cloud)
-                //clouds += 1
-            }
-        }
- */
+        // add cloud
+        let cloudTexture = SKTexture(imageNamed: "cloud1")
+        let cloud = SKSpriteNode(texture: cloudTexture)
+        let cloudHeight = cloud.frame.height / 2
+        cloud.position = CGPoint(x:0 , y:0)
+        cloud.physicsBody = SKPhysicsBody(texture: cloudTexture, size: cloud.frame.size)
+        cloud.physicsBody?.isDynamic = false  // not affected from physics
+        addChild(cloud)
         
         //add camera
         let cameraNode = SKCameraNode()
@@ -124,8 +119,8 @@ class GameScene: SKScene {
         rightArm.addChild(rightWrist)
         rightWrist.addChild(rightHand)
         
-        // testing gravity
-        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+        // sets gravity to zero
+        //physicsWorld.gravity = CGVector(dx: 0, dy: 0)
       
     }
     
